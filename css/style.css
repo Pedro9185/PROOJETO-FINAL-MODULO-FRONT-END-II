@@ -1,0 +1,75 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    color: #fff;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+
+
+}
+.animacao{
+    animation: animacaoLogin 1s linear ;
+}
+
+@keyframes animacaoLogin{
+    from{
+       opacity: 0; ; 
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+.botaoEntrar{
+    animation: botaoMudaDeCor 3s infinite;
+}
+
+@keyframes botaoMudaDeCor{
+    0%{
+       background-color: #217AFD ; 
+    }
+   
+   50%{
+    background-color: #1BCDF1;
+   }
+   
+    100%{
+        background-color: #217AFD;
+    }
+}
+
+.section-meus-recados {
+
+    width: 100vw;
+    height: 90vh;
+    text-align: center;
+}
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #DDD;
+}
+
+tbody>tr:hover {
+    background-color: #1BCDF1;
+}
