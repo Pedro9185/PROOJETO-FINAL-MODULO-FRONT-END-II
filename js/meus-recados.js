@@ -1,5 +1,4 @@
-const meuModal = new bootstrap.Modal("#exampleModal");
-const usuarioLogado = buscarDadosLocalStorage("usuarioLogado");
+const usuarioLogado = buscarDadosStorage("usuarioLogado");
 document.addEventListener("DOMContentLoaded", () => {
   if (!usuarioLogado.nome) {
     window.location.href = "entrar.html";
@@ -8,131 +7,195 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-const listaRecados = usuarioLogado.recados;
+let indiceAtualizacao = -1; // inicia com um valor inválido para indices de lista pois não esta ainda no modo atualização
+document.addEventListener("DOMContentLoaded", mostrarRecados);
 
-const formularioHTML = document.getElementById("formularioRecados");
+const listaRecados = buscarDadosStorage("recados");
+const modalCadastro = new bootstrap.Modal("#modal-criar");
+const modalExcluir = new bootstrap.Modal("#modal-excluir");
+const modalAtualizar = new bootstrap.Modal("#modal-atualizar");
 
-const tBody = document.getElementById("meus-recados");
+const toastDiv = document.getElementById("toast-app");
+const toastBS = new bootstrap.Toast(toastDiv);
 
-formularioHTML.addEventListener("submit", (evento) => {
-  evento.preventDefault();
+const formCadastro = document.getElementById("form-cadastro");
+const formAtualizar = document.getElementById("form-atualizar");
 
-  const descricao = document.getElementById("descricao-id").value;
-  const detalhamento = document.getElementById("detalhamento-id").value;
+formCadastro.addEventListener("submit", (ev) => {
+  ev.preventDefault();
 
-  const novoRecado = {
-    descricao: descricao,
-    detalhamento: detalhamento,
-  };
-
-  listaRecados.push(novoRecado);
-
-  salvarRecados();
-
-  mostrarRecados();
-
-  formularioHTML.reset();
-});
-
-function salvarRecados() {
-  const listaUsuario = buscarDadosLocalStorage("usuarios");
-
-  const acharUsuario = listaUsuario.findIndex(
-    (valor) => valor.nome === usuarioLogado.nome
-  );
-
-  listaUsuario[acharUsuario].recados = listaRecados;
-
-  guardarLocalStorage("usuarios", listaUsuario);
-}
-
-function mostrarRecados() {
-  tBody.innerHTML = "";
-
-  listaRecados.forEach((valor, index) => {
-    tBody.innerHTML += `
-        <div class="col">
-        <tr id='${index}'>
-        <td>${index + 1}</td>
-        <td>${valor.descricao}</td>
-        <td>${valor.detalhamento}</td>
-        <td>
-            <button class="btn btn-danger" onclick="apagar(${index})">Apagar</button>
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="prepararEdicao(${index})">Editar</button>
-        </td>
-    </tr>
-    </div>
-    `;
-  });
-}
-
-function prepararEdicao(indice) {
-  const inputEditarDescricao = document.getElementById("editarDescricao");
-  const inputEditarDetalhamento = document.getElementById("editarDetalhamento");
-
-  inputEditarDescricao.value = usuarioLogado.recados[indice].descricao;
-  inputEditarDetalhamento.value = usuarioLogado.recados[indice].detalhamento;
-
-  const formularioEditarRecados = document.getElementById(
-    "formularioEditarRecados"
-  );
-
-  formularioEditarRecados.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    usuarioLogado.recados[indice].descricao = inputEditarDescricao.value;
-    usuarioLogado.recados[indice].detalhamento = inputEditarDetalhamento.value;
-
-    guardarLocalStorage("usuarioLogado", usuarioLogado);
-
-    mostrarRecados();
-
-    meuModal.hide();
-  });
-}
-
-function apagar(indice) {
-  const confirmacao = confirm("Tem certeza que deseja excluir este recado ?");
-
-  if (confirmacao === true) {
-    usuarioLogado.recados.splice(indice, 1);
-    console.log(usuarioLogado);
-
-    let tr = document.getElementById(indice);
-    tr.remove();
-
-    guardarLocalStorage("usuarioLogado", usuarioLogado);
-
-    salvarRecados();
-
-    mostrarRecados();
-  } else {
+  if (!formCadastro.checkValidity()) {
+    formCadastro.classList.add("was-validated");
     return;
   }
+
+  // ta tudo válido
+  const descricao = document.getElementById("descricao");
+  const detalhamento = document.getElementById("detalhamento");
+
+  const novoRecado = {
+    id: gerarId(),
+    descricao: descricao.value,
+    detalhamento: detalhamento.value,
+  };
+
+  // const existe = listaRecados.some(
+  //   (recado) => recado.detalhamento === novoRecado.detalhameto
+  // );
+
+  // if (existe) {
+  //   modalCadastro.hide();
+  //   mostrarAlerta("danger", "Recado não adicionado. Já existe na sua lista!");
+  //   return;
+  // }
+
+  listaRecados.push(novoRecado);
+  salvarDadosStorage("recados", listaRecados);
+  modalCadastro.hide();
+  formCadastro.classList.remove("was-validated");
+  formCadastro.reset();
+  mostrarRecados();
+  mostrarAlerta("success", "Recado salvo com sucesso!");
+});
+
+formAtualizar.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+
+  if (!formAtualizar.checkValidity()) {
+    formAtualizar.classList.add("was-validated");
+    return;
+  }
+
+  const descricaoAtualizado = document.getElementById(
+    "descricao-atualizar"
+  ).value;
+  const detalhamentoAtualizado = document.getElementById(
+    "detalhamento-atualizar"
+  ).value;
+
+  // daqui pra baixo a lógica de atualizar
+
+  // lista
+  listaRecados[indiceAtualizacao].descricao = descricaoAtualizado;
+  listaRecados[indiceAtualizacao].detalhamento = detalhamentoAtualizado;
+
+  // atualizar storage
+  salvarDadosStorage("recados", listaRecados);
+
+  // atualizar html
+  mostrarRecados();
+
+  modalAtualizar.hide();
+  formAtualizar.classList.remove("was-validated");
+  formAtualizar.reset();
+  mostrarAlerta("success", "recado atualizado com sucesso!");
+  indiceAtualizacao = -1;
+});
+
+function mostrarRecados() {
+  const tbody = document.getElementById("lista-recados");
+
+  tbody.innerHTML = "";
+
+  listaRecados.forEach((recado, indice) => {
+    tbody.innerHTML += `
+            <tr id="${recado.id}">
+                <td>${indice + 1}</td>
+                <td>${recado.descricao}</td>
+                <td>${recado.detalhamento}</td>
+                <td>
+                    <button class="btn btn-success m-1" aria-label="Editar" onclick="mostrarModalAtualizar(${indice})">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-danger m-1" aria-label="Apagar" onclick="mostrarModalExcluir(${indice}, ${
+      recado.id
+    })">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+  });
+}
+
+function mostrarModalExcluir(indiceRecado, idRecado) {
+  console.log(idRecado);
+  modalExcluir.show();
+  const botaoExcluir = document.getElementById("btn-delete");
+
+  botaoExcluir.setAttribute(
+    "onclick",
+    `apagarRecado(${indiceRecado}, ${idRecado})`
+  );
+}
+
+function apagarRecado(indiceRecado, idContato) {
+  listaRecados.splice(indiceRecado, 1);
+
+  salvarDadosStorage("recados", listaRecados);
+
+  // linhas na tabela - atualizar/excluir HTML
+  const trExcluir = document.getElementById(idContato);
+  trExcluir.remove();
+
+  modalExcluir.hide();
+  mostrarAlerta("success", "Recado excluido com sucesso!");
+}
+
+function mostrarModalAtualizar(indiceRecado) {
+  console.log(indiceRecado);
+  const recadoAtualizar = listaRecados[indiceRecado];
+
+  modalAtualizar.show();
+  const descricaoAtualizar = document.getElementById("descricao-atualizar");
+  const detalhamentoAtualizar = document.getElementById(
+    "detalhamento-atualizar"
+  );
+
+  descricaoAtualizar.value = recadoAtualizar.descricao;
+  detalhamentoAtualizar.value = recadoAtualizar.detalhamento;
+
+  console.log(detalhamentoAtualizar.value);
+
+  indiceAtualizacao = indiceRecado;
+}
+
+// função para gerar um número aleatório
+function gerarId() {
+  return new Date().getTime();
+}
+
+// salvar no localStorage - setItem
+function salvarDadosStorage(chave, valor) {
+  localStorage.setItem(chave, JSON.stringify(valor));
+}
+
+// buscar as informações salvas no localStorage - getItem
+function buscarDadosStorage(chave) {
+  const resultado = localStorage.getItem(chave);
+
+  return JSON.parse(resultado) ?? [];
+}
+
+// mostrar um alerta/toast toda vez que for executada alguma operação
+// independentemente de sucesso ou falha
+function mostrarAlerta(tipo, mensagem) {
+  toastDiv.classList.add(`text-bg-${tipo}`);
+
+  const espacoMensagem = document.getElementById("espaco-mensagem");
+  espacoMensagem.innerHTML = mensagem;
+
+  toastBS.show();
+
+  setTimeout(() => {
+    toastBS.hide();
+
+    toastDiv.classList.remove(`text-bg-${tipo}`);
+  }, 5000);
 }
 
 function sair() {
-  salvarRecados();
   localStorage.removeItem("usuarioLogado");
 
-  // guardarLocalStorage('usuarioLogado', usuarioDeslogado)
-
   window.location.href = "./entrar.html";
-}
-
-function guardarLocalStorage(chave, valor) {
-  const valorJSON = JSON.stringify(valor);
-
-  localStorage.setItem(chave, valorJSON);
-}
-
-function buscarDadosLocalStorage(chave) {
-  const dadoJSON = localStorage.getItem(chave);
-
-  if (dadoJSON) {
-    const dadosConvertidos = JSON.parse(dadoJSON);
-    return dadosConvertidos;
-  } else {
-    return {};
-  }
 }

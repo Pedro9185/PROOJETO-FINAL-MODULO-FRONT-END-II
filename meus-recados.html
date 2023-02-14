@@ -13,94 +13,126 @@
   <link rel="stylesheet" href="./css/style.css">
 </head>
 
-<body class="bg-primary bg-gradient">
+<body class="bg-secondary bg-gradient">
   <button onclick="sair()" class="btn btn-danger">Sair</button>
   <main>
-    <section class="section-meus-recados">
-      <div class="divMeusRecados h-50">
-        <h1>RECADOS</h1>
+    <div class="container-fluid">
+        
 
+      <section class="container mt-5">
+          <h1 class="text-primary">Recados</h1>
+          <hr class="mb-5">
+          <table class="table table-hover">
+              <thead>
+                  <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">Descrição</th>
+                      <th scope="col">Detalhamento</th>
+                      <th scope="col">Ações</th>
+                  </tr>
+              </thead>
+              <tbody id="lista-recados">
+                  <!-- aqui será inserido pelo js -->
+              </tbody>
+          </table>
+      </section>
 
-        <form id="formularioRecados" class="h-50">
-          <div class="container w-100 h-50  ">
-            <div class="row h-100 justify-content-center align-items-center">
-              <div class="col-6">
-                <input class="form-control" name="descricao" type="text" id="descricao-id" placeholder="Descrição"
-                  required>
-              </div>
-
-              <div class="col-6">
-                <input class="form-control" name="detalhamento" type="text" id="detalhamento-id"
-                  placeholder="Detalhamento">
-              </div>
-              <div class="col">
-                <input id="inputSalvar" class="btn btn-info" type="submit" value="Salvar"
-                onclick="salvarRecados(event)">
-              </div>
-            </div>
-          </div>
-
-        </form>
-       <div class="row">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Descrição</th>
-              <th>Detalhamento</th>
-              <th>Ação</th>
-            </tr>
-          </thead>
-          <div class="col">
-            <tbody id="meus-recados">
-
-            </tbody>
-          </div>
-          
-          <section id="sectionEditar">
-
-          </section>
-        </table>
-       </div>
-    </section>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+  </div>
+  <!-- Modal CADASTRAR CONTATO -->
+  <div class="modal fade" id="modal-criar" tabindex="-1" aria-labelledby="titleModalCreate" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Recado</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form id="formularioEditarRecados" class="form-control">
-            <div class="modal-body row">
-
-              <div class="col mt-3">
-                <input class="form-control" name="descricao" type="text" id="editarDescricao" placeholder="Descrição"
-                  required>
-
-              </div>
-              <div class="col mt-3">
-                <input class="form-control" name="detalhamento" type="text" id="editarDetalhamento"
-                  placeholder="Detalhamento">
-              </div>
-
-
-
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="titleModalCreate">Criar Recado</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-
-              <input type="submit" class="btn btn-primary" value="Salvar Alterações">
-            </div>
-          </form>
+            <form id="form-cadastro" class="needs-validation" novalidate>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Descrição</label>
+                        <input type="text" class="form-control" id="descricao" minlength="3" required >
+                        
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Detalhamento</label>
+                        <input type="text" class="form-control"  id="detalhamento" required >
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
+</div>
+
+<!-- Modal EXCLUIR CONTATO -->
+<div class="modal fade" id="modal-excluir" tabindex="-1" aria-labelledby="titleModalDelete" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="titleModalDelete">Excluir Contato</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+              <p>Tem certeza que quer realizar a exclusão? Esta operação é definitiva.</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="button" class="btn btn-danger" id="btn-delete">Excluir</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Modal ATUALIZAR CONTATO -->
+<div class="modal fade" id="modal-atualizar" tabindex="-1" aria-labelledby="titleModalUpdate" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="titleModalUpdate">Atualizar Recado</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <form id="form-atualizar" class="needs-validation">
+              <div class="modal-body">
+                  <div class="mb-3">
+                      <label for="descricao-atualizar" class="form-label">Descricao: </label>
+                      <input type="text" class="form-control" id="descricao-atualizar" minlength="3" required >
+                  </div>
+                  <div class="mb-3">
+                      <label for="detalhamento-atualizar" class="form-label">Detalhamento: </label>
+                      <input type="text" class="form-control"  id="detalhamento-atualizar">
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
   </main>
+  <!-- TOAST DA PÁGINA -->
+  <div id="toast-app" class="toast align-items-center border-0 toast-position" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body" id="espaco-mensagem">
+            <!-- vai ser inserida pelo js -->
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+    </div>
+</div>
+
+  <button class="btn btn-primary rounded-circle float-button float-end" data-bs-toggle="modal" data-bs-target="#modal-criar">
+    <i class="bi bi-plus-lg"></i>
+</button>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
     crossorigin="anonymous"></script>
+
   <script src="./js/meus-recados.js"></script>
 </body>
 
-</html>
+</html> 

@@ -1,75 +1,83 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
-html {
-    color: #fff;
-}
 
 a {
-    text-decoration: none;
-    color: rgb(0, 0, 0);
+  text-decoration: none;
+  color: rgb(0, 0, 0);
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
-    overflow-x: hidden;
-
-
-}
-.animacao{
-    animation: animacaoLogin 1s linear ;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
 }
 
-@keyframes animacaoLogin{
-    from{
-       opacity: 0; ; 
-    }
-    to{
-        opacity: 1;
-    }
+.float-button {
+  height: 50px;
+  width: 50px;
+  position: fixed;
+  right: 40px;
+  bottom: 40px;
 }
 
-.botaoEntrar{
-    animation: botaoMudaDeCor 3s infinite;
+.toast-position {
+  position: fixed;
+  right: 40px;
+  top: 20px;
 }
 
-@keyframes botaoMudaDeCor{
-    0%{
-       background-color: #217AFD ; 
-    }
-   
-   50%{
-    background-color: #1BCDF1;
-   }
-   
-    100%{
-        background-color: #217AFD;
-    }
+.animacao {
+  animation: animacaoLogin 1s linear;
+}
+
+@keyframes animacaoLogin {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.botaoEntrar {
+  animation: botaoMudaDeCor 3s infinite;
+}
+
+@keyframes botaoMudaDeCor {
+  0% {
+    background-color: #217afd;
+  }
+
+  50% {
+    background-color: #1bcdf1;
+  }
+
+  100% {
+    background-color: #217afd;
+  }
 }
 
 .section-meus-recados {
-
-    width: 100vw;
-    height: 90vh;
-    text-align: center;
+  width: 100vw;
+  height: 90vh;
+  text-align: center;
 }
 
-
 table {
-    border-collapse: collapse;
-    width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 th,
 td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #DDD;
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-tbody>tr:hover {
-    background-color: #1BCDF1;
+tbody > tr:hover {
+  background-color: gray;
 }
