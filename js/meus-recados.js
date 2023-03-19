@@ -39,15 +39,7 @@ formCadastro.addEventListener("submit", (ev) => {
     detalhamento: detalhamento.value,
   };
 
-  // const existe = listaRecados.some(
-  //   (recado) => recado.detalhamento === novoRecado.detalhameto
-  // );
-
-  // if (existe) {
-  //   modalCadastro.hide();
-  //   mostrarAlerta("danger", "Recado não adicionado. Já existe na sua lista!");
-  //   return;
-  // }
+  
 
   listaRecados.push(novoRecado);
   salvarDadosStorage("recados", listaRecados);

@@ -17,7 +17,7 @@ formulario.addEventListener('submit', (ev) => {
     return;
   } else {
     armazenarDadosUsuarioLocalStorage('usuarioLogado', usuarioEncontrado)
-    window.location.href = './meus-recados.html'
+    window.location.href = './recados.html'
   }
 
 
