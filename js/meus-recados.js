@@ -189,5 +189,5 @@ function mostrarAlerta(tipo, mensagem) {
 function sair() {
   localStorage.removeItem("usuarioLogado");
 
-  window.location.href = "./entrar.html";
+  window.location.href = "./index.html";
 }
